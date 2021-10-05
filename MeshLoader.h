@@ -9,7 +9,9 @@ protected:
     std::vector<BoundaryFiniteElement> surfaces;
 
 private:
-    Node get_node(int);
+    Node get_node(int ID) {
+        return nodes.at(ID);
+    }
     int last_nodes() {
         return nodes.rbegin()->ID;
     }
