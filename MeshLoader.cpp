@@ -7,12 +7,12 @@
 
 std::vector<Node> MeshLoader::vertex(int ID) {
     std::set<Node> result;
-    auto iter = boundary_finite_elements.begin();
-    auto last_iter = boundary_finite_elements.end();
+    auto iter = surfaces.begin();
+    auto last_iter = surfaces.end();
 
     while (iter != last_iter) {
-        iter = std::find_if(iter, last_iter, [ID](BoundaryFiniteElement& elem) {
-            return elem.edge_ID == ID;
+        iter = std::find_if(iter, last_iter, [ID](BoundaryFiniteElement& surface) {
+            return surface.edge_ID == ID;
         });
 
         if (iter != last_iter) {
@@ -66,7 +66,7 @@ std::vector<std::vector<Node>> MeshLoader::near_nodes() {
 }
 
 
-std::vector<FiniteElement> MeshLoader::finite_elements_by_ID(int ID1, int ID2, int ID3) {
+std::vector<FiniteElement> MeshLoader::finite_elements_ID(int ID1, int ID2, int ID3) {
     std::vector<FiniteElement> result;
     auto iter = finite_elements.begin();
     auto last_iter = finite_elements.end();
@@ -87,15 +87,15 @@ std::vector<FiniteElement> MeshLoader::finite_elements_by_ID(int ID1, int ID2, i
     return result;
 }
 
-std::vector<FiniteElement> MeshLoader::finite_elements_by_Edge(int ID1, int ID2) {
+std::vector<FiniteElement> MeshLoader::finite_elements_Edge(int ID1, int ID2) {
     std::vector<FiniteElement> result;
     auto iter = finite_elements.begin();
     auto last_iter = finite_elements.end();
 
     while (iter != last_iter) {
-        iter = std::find_if(iter, last_iter, [ID1, ID2](FiniteElement& elem) {
-            return std::find(elem.nodes_ID.begin(), elem.nodes_ID.end(), ID1) != elem.nodes_ID.end()
-                && std::find(elem.nodes_ID.begin(), elem.nodes_ID.end(), ID2) != elem.nodes_ID.end();
+        iter = std::find_if(iter, last_iter, [ID1, ID2](FiniteElement& element) {
+            return std::find(element.nodes_ID.begin(), element.nodes_ID.end(), ID1) != element.nodes_ID.end()
+                && std::find(element.nodes_ID.begin(), element.nodes_ID.end(), ID2) != element.nodes_ID.end();
         });
 
         if (iter != last_iter) {
@@ -107,14 +107,14 @@ std::vector<FiniteElement> MeshLoader::finite_elements_by_Edge(int ID1, int ID2)
     return result;
 }
 
-std::vector<FiniteElement> MeshLoader::finite_elements_by_material_ID(int ID) {
+std::vector<FiniteElement> MeshLoader::finite_elements_material(int ID) {
     std::list<FiniteElement> result;
     auto iter = finite_elements.begin();
     auto last_iter = finite_elements.end();
 
     while (iter != last_iter) {
-        iter = std::find_if(iter, last_iter, [ID](FiniteElement& elem) {
-            return elem.material_ID == ID;
+        iter = std::find_if(iter, last_iter, [ID](FiniteElement& element) {
+            return element.material_ID == ID;
         });
 
         if (iter != last_iter) {
@@ -126,14 +126,14 @@ std::vector<FiniteElement> MeshLoader::finite_elements_by_material_ID(int ID) {
     return std::vector<FiniteElement>(result.begin(), result.end());
 }
 
-std::vector<BoundaryFiniteElement> MeshLoader::boundary_finite_elements_by_ID(int ID) {
+std::vector<BoundaryFiniteElement> MeshLoader::surfaces_ID(int ID) {
     std::list<BoundaryFiniteElement> result;
-    auto iter = boundary_finite_elements.begin();
-    auto last_iter = boundary_finite_elements.end();
+    auto iter = surfaces.begin();
+    auto last_iter = surfaces.end();
 
     while (iter != last_iter) {
-        iter = std::find_if(iter, last_iter, [ID](BoundaryFiniteElement& elem) {
-            return elem.element_ID == ID;
+        iter = std::find_if(iter, last_iter, [ID](BoundaryFiniteElement& surface) {
+            return surface.element_ID == ID;
         });
 
         if (iter != last_iter) {
@@ -145,7 +145,7 @@ std::vector<BoundaryFiniteElement> MeshLoader::boundary_finite_elements_by_ID(in
     return std::vector<BoundaryFiniteElement>(result.begin(), result.end());
 }
 
-void MeshLoader::square() {
+void MeshLoader::middle_insert() {
 
     std::unordered_set<Edge, Hash> edges;
     for (auto& iter : finite_elements) {
@@ -182,7 +182,7 @@ void MeshLoader::square() {
         iter.nodes_ID.shrink_to_fit();
     }
 
-    for (auto& it : boundary_finite_elements) {
+    for (auto& it : surfaces) {
         std::vector<int> N(it.nodes_ID);
 
         for (auto i = N.begin(); i < N.end() - 1; ++i) {
@@ -199,7 +199,7 @@ void MeshLoader::square() {
         it.nodes_ID.shrink_to_fit();
     }
 
-    boundary_finite_elements.shrink_to_fit();
+    surfaces.shrink_to_fit();
     nodes.shrink_to_fit();
 }
 

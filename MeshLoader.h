@@ -6,7 +6,7 @@ class MeshLoader {
 protected:
     std::vector<Node> nodes;
     std::vector<FiniteElement> finite_elements;
-    std::vector<BoundaryFiniteElement> boundary_finite_elements;
+    std::vector<BoundaryFiniteElement> surfaces;
 
 public:
     virtual void loadmesh(const std::string&) = 0;
@@ -22,22 +22,22 @@ public:
     std::vector<FiniteElement>& Finite_Elements() {
         return finite_elements;
     }
-    std::vector<FiniteElement> finite_elements_by_ID(int, int, int);
-    std::vector<FiniteElement> finite_elements_by_Edge(int, int);
-    std::vector<FiniteElement> finite_elements_by_material_ID(int);
+    std::vector<FiniteElement> finite_elements_ID(int, int, int);
+    std::vector<FiniteElement> finite_elements_Edge(int, int);
+    std::vector<FiniteElement> finite_elements_material(int);
 
-    std::vector<BoundaryFiniteElement>& Boundary_Finite_Elements() {
-        return boundary_finite_elements;
+    std::vector<BoundaryFiniteElement>& Surfaces() {
+        return surfaces;
     }
-    std::vector<BoundaryFiniteElement> boundary_finite_elements_by_ID(int);
+    std::vector<BoundaryFiniteElement> surfaces_ID(int);
 
     void print() {
         std::cout << Nodes() << std::endl
             << Finite_Elements() << std::endl
-            << Boundary_Finite_Elements() << std::endl;
+            << Surfaces() << std::endl;
     }
 
-    void square();
+    void middle_insert();
 
 private:
     int last_nodes() {
