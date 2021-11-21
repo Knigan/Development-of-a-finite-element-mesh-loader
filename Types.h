@@ -9,7 +9,7 @@ struct Node {
     bool vertex;
 
     Node() = default;
-    Node(int ID, std::array<double, 3> cd, bool vertex) :
+    Node(int ID, const std::array<double, 3>& cd, bool vertex) : //!!! cd по ссылке на константу (исправлено)
         ID(ID), cd(cd), vertex(vertex) {}
 
     bool operator == (const Node& N) const {
@@ -30,8 +30,8 @@ struct FiniteElement {
     int material_ID;
     std::vector<int> nodes_ID;
 
-    friend std::ostream& operator<<(std::ostream&, const FiniteElement&);
-    friend std::ostream& operator<<(std::ostream&, const std::vector<FiniteElement>&);
+    friend std::ostream& operator << (std::ostream&, const FiniteElement&);
+    friend std::ostream& operator << (std::ostream&, const std::vector<FiniteElement>&);
 };
 
 struct BoundaryFiniteElement : public FiniteElement {
@@ -39,8 +39,8 @@ struct BoundaryFiniteElement : public FiniteElement {
     int edge_ID;
     std::vector<int> nodes_ID;
 
-    friend std::ostream& operator<<(std::ostream&, const BoundaryFiniteElement&);
-    friend std::ostream& operator<<(std::ostream&, const std::vector<BoundaryFiniteElement>&);
+    friend std::ostream& operator << (std::ostream&, const BoundaryFiniteElement&);
+    friend std::ostream& operator << (std::ostream&, const std::vector<BoundaryFiniteElement>&);
 };
 
 struct Edge {
@@ -71,9 +71,15 @@ struct Hash {
 
     size_t operator () (const Edge& E) const {
         size_t seed = 0;
-        hash_combine(seed, E.first);
-        hash_combine(seed, E.last);
-        hash_combine(seed, E.center);
+        
+        //!!! Поля должны быть отсортированны, в противном случае ребра (1,2,3) и (2,1,3) имеют разные хэш-значения (исправлено)
+        
+        int first = std::min(std::min(E.first, E.last), E.center);
+        int last = std::max(std::max(E.first, E.last), E.center);
+        int center = (E.first + E.last + E.center) - (first + last);
+        hash_combine(seed, first);
+        hash_combine(seed, last);
+        hash_combine(seed, center);
         return seed;
     }
 };

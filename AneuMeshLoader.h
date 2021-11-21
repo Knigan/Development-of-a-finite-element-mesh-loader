@@ -3,5 +3,5 @@
 
 class AneuMeshLoader : public MeshLoader {
 public:
-    void loadmesh(const std::string&) override;
+    void loadmesh(const std::string&, const std::string&, const std::string&) override;
 };
